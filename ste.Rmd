@@ -1,0 +1,936 @@
+---
+title: "NWUNEMELU .C.S"
+author: "S.C. Nwunemelu"
+date: "3/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)### Read Excel Files. Import excel files into R
+
+library(tidyverse)###Tidyverse Is the collection of essential R packages for data science
+
+```
+
+##In this section i call in my two datasets, view my datasets and also the names of the ##two variables in the datasets with the number of rows each have, i find out that two 
+## datasets has same variables but different numbers of observations . so as to know how to merge the two dataset together.
+
+```{r}
+###Step1: Data Preprocessing and Summarizing Datasets
+
+hotel1 <- read.csv("C:\\Users\\User\\Desktop\\chibu\\H1.csv")
+
+hotel2 <- read.csv("C:\\Users\\User\\Desktop\\chibu\\H2.csv")
+
+str(hotel1)
+
+View(hotel1)
+
+View(hotel2)
+
+names(hotel1)
+
+names(hotel2)
+
+str(hotel2)
+
+
+
+```
+
+###Merging my two datasets together using rowbind. I choose row bind because the two datasets has the same variables but different numbers of observation.
+```{r}
+Hoteldata <- rbind(hotel1,hotel2)
+
+View(Hoteldata)
+
+str(Hoteldata)
+
+summary(Hoteldata)
+
+###In this part i was able to combine my two datasets together, view in
+
+## the data sets i observe that they were alot of null values in the 
+
+
+##AGENT and COMPANY columns,using str() function to check the 
+
+##datatype of the datasets and also summary() function to check for 
+
+##NA'S in the dataset
+
+
+
+
+```
+
+```{r}
+### from my observation i found out that AGENT and COMPANY has too many null values in the columns
+
+Hoteldata$Agent = NULL###This function removes the AGENT variable from the datasets
+
+Hoteldata$Company = NULL
+
+Hoteldata$ReservationStatusDate = NULL
+
+Hoteldata$Country = NULL
+
+Hoteldata$ReservationStatus= NULL
+
+names(Hoteldata)
+
+###I use the name()function to confirm the change i made on my ##datasets.
+
+```
+
+```{r}
+## To replace NA'S in the dataset with median
+
+sum(is.na(Hoteldata))#To check the number of NA'S in the dataset 
+## which is 4
+
+names(which(colSums(is.na(Hoteldata))>0)) ##This Function shows the variable with NA'S
+
+##Replace Missing Values with median
+
+Hoteldata$Children[is.na(Hoteldata$Children)] <- median(Hoteldata$Children,na.rm =TRUE)
+
+sum(is.na(Hoteldata)) ##To check if the NA'S has been removed
+
+summary(Hoteldata)
+
+```
+
+```{r}
+###Converting variables datatype
+
+Hoteldata$IsCanceled <- as.factor(Hoteldata$IsCanceled)
+
+Hoteldata$Adults <- as.integer(Hoteldata$Adults)
+
+Hoteldata$ArrivalDateDayOfMonth <- as.integer(Hoteldata$ArrivalDateDayOfMonth)
+
+Hoteldata$ArrivalDateMonth <- as.factor(Hoteldata$ArrivalDateMonth)
+
+Hoteldata$ArrivalDateWeekNumber <- as.integer(Hoteldata$ArrivalDateWeekNumber)
+
+Hoteldata$ArrivalDateYear <- as.integer(Hoteldata$ArrivalDateYear)
+
+```
+
+```{r}
+Hoteldata$AssignedRoomType <- as.factor(Hoteldata$AssignedRoomType)
+
+Hoteldata$Babies <- as.integer(Hoteldata$Babies)
+
+Hoteldata$BookingChanges<- as.integer(Hoteldata$BookingChanges)
+
+Hoteldata$Children <- as.integer(Hoteldata$Children)
+
+Hoteldata$CustomerType <- as.factor(Hoteldata$CustomerType)
+
+Hoteldata$DaysInWaitingList <- as.integer(Hoteldata$DaysInWaitingList)
+
+```
+
+```{r}
+Hoteldata$DepositType <- as.factor(Hoteldata$DepositType)
+
+Hoteldata$ReservedRoomType <- as.factor(Hoteldata$ReservedRoomType)
+
+Hoteldata$StaysInWeekendNights <- as.integer(Hoteldata$StaysInWeekendNights)
+
+Hoteldata$StaysInWeekNights <- as.integer(Hoteldata$StaysInWeekNights)
+
+Hoteldata$TotalOfSpecialRequests <- as.integer(Hoteldata$TotalOfSpecialRequests)
+
+Hoteldata$DistributionChannel<- as.factor(Hoteldata$DistributionChannel)
+
+
+Hoteldata$IsRepeatedGuest<- as.factor(Hoteldata$IsRepeatedGuest)
+
+```
+
+```{r}
+Hoteldata$LeadTime<- as.integer(Hoteldata$LeadTime)
+
+Hoteldata$MarketSegment <- as.factor(Hoteldata$MarketSegment)
+
+Hoteldata$Meal <- as.factor(Hoteldata$Meal)
+
+Hoteldata$PreviousBookingsNotCanceled <- as.integer(Hoteldata$PreviousBookingsNotCanceled)
+
+Hoteldata$PreviousCancellations <- as.integer(Hoteldata$PreviousCancellations)
+
+Hoteldata$RequiredCarParkingSpaces <- as.integer(Hoteldata$RequiredCarParkingSpaces)
+
+Hoteldata$ADR <- as.numeric(Hoteldata$ADR)
+
+str(Hoteldata)
+```
+
+```{r}
+install.packages("ggplot2")
+
+install.packages("ggpbur")
+install.packages("plotrix")
+install.packages("stringr")
+
+```
+
+```{r}
+
+library(tidyverse)
+
+library(ggplot2)###ggplot2 is an R package dedicated to data visualization. It can greatly ##improve the quality and aesthetics of your graphics, 
+
+library(plotrix)##The plotrix package is used to provide a method for getting many sorts of specialized plots ... 
+
+library(stringr)##s a set of simple wrappers that make R's string functions more consistent, simpler and easier to use. 
+
+library(ggpubr)##The ggpubr R package facilitates the creation of beautiful ggplot2-based graphs for researcher with non-advanced programming backgrounds.
+```
+
+```{r}
+##I check to see the percentage of Booking is canceled and Not canceled
+
+glimpse(Hoteldata$IsCanceled)
+
+prop.table(table(Hoteldata$IsCanceled))##to check the percentage of the BOOKING is CANCELED ## OVER NOT CANCELED to know which one is greater than each other.
+table(Hoteldata$IsCanceled)
+
+```
+
+
+
+
+
+```{r}
+ggplot(Hoteldata,aes(x =ArrivalDateMonth, fill =IsCanceled))+
+  theme_bw() +
+  geom_bar() +
+  coord_flip()+
+  labs(y = "ADR")
+title = "Hoteldata IsCanceled rate at which ArrivalDatemonth Vs ADR"
+
+```
+
+```{r}
+Hoteldata %>%
+  ggplot(aes(MarketSegment,fill = IsCanceled))+
+  theme_bw()+
+  geom_bar()+
+  coord_flip()+
+  labs(y="ArrivalDateYear")
+ title = "Hoteldata IsCanceled rate at which MarketSegment Vs ArrivalDateYear" 
+  
+  
+```
+
+```{r}
+Hoteldata %>%
+  ggplot(aes(DepositType,fill = IsCanceled))+
+  theme_bw()+
+  geom_bar()+
+  labs(y="DaysInWaitingList")
+ title = "Hoteldata IsCanceled rate at which DaysInWaitingList Vs DepositType" 
+  
+
+```
+
+```{r}
+Hoteldata %>%
+  ggplot(aes(AssignedRoomType,fill = IsCanceled))+
+  theme_bw()+
+  geom_bar()+
+  
+  labs(y="BookingChanges")
+ title = "Hoteldata IsCanceled rate at which Assignedroom Vs BookingChanges" 
+  
+```
+
+```{r}
+Hoteldata %>%
+  ggplot(aes(StaysInWeekendNights,fill = IsCanceled))+
+  theme_bw()+
+  geom_bar()+
+  labs(y="DistributionChannel")
+ title = "Hoteldata IsCanceled rate at which StaysInWeekendNights Vs DistributionChannel" 
+  
+
+```
+
+```{r}
+Hoteldata %>%
+  ggplot(aes(CustomerType,fill = IsCanceled))+
+  theme_bw()+
+  geom_bar()+
+  labs(y="LeadTime")
+ title = "Hoteldata IsCanceled rate at which CustomerType Vs LeadTime" 
+  
+```
+
+```{r}
+Hoteldata %>%
+  ggplot(aes(IsRepeatedGuest,fill = IsCanceled))+
+  theme_bw()+
+  geom_bar()+
+  
+  labs(y="TotalofSpecialRequests")
+ title = "Hoteldata IsCanceled rate at which IsRepeatedGuest Vs TotalofSpecialRequests" 
+  
+```
+
+```{r}
+install.packages("PerformanceAnalytics")
+install.packages("caret")
+install.packages("e1071")
+install.packages("randomForest")
+install.packages("catools")
+
+```
+
+```{r}
+library(PerformanceAnalytics)###provides an R package of econometric functions for ##performance and risk analysis of financial instruments.
+
+library(caret)###(short for classification and Regression Training) contains functions to ##streamline the model training process for complex regression and classification problems.
+
+library(e1071)###it provides a training function with standard and formula interfaces, and a predict() method.
+
+library(randomForest)###The R package "randomForest" is used to create random forests.
+
+library(caTools) ##
+```
+
+```{r}
+
+library(randomForest)
+
+library(caret)
+
+str(Hoteldata)
+```
+```{r}
+gc()
+memory.limit(20000)
+
+```
+
+```{r}
+###LOGISTIC REGRESSION MODEL
+
+##Feature Selection
+
+### using  random forest to get  the important  variables
+
+memory.limit(10000)
+
+output.forestHoteldata <- randomForest(IsCanceled ~., data = Hoteldata)
+
+output.forestHoteldata
+
+randomForest:: importance(output.forestHoteldata)
+
+
+```
+
+```{r}
+order()
+randomF_DF <- data.frame(Variables=row.names(output.forestHoteldata),
+                         MeanDecreaseGini = output.forestHoteldata[,1])
+randomF_DF <- randomF_DF[order(randomF_DF$MeanDecreaseGini,decrease=TRUE),]
+randomF_DF
+```
+
+```{r}
+
+###Creating training and testing data sets
+##Spliting my datasets
+
+view(Hoteldata)
+
+Hotel_1 <- Hoteldata [which(Hoteldata$IsCanceled == 1),]
+
+Hotel_2 <- Hoteldata[which(Hoteldata$IsCanceled == 0),]
+
+view(Hotel_1)
+
+view(Hotel_2)
+
+
+```
+
+```{r}
+
+ set.seed(120)### as the machine to pick a random number
+#### Set training data to 80% of the dataset (Balance my 1 and 0 values)
+
+trainHoteldata_1 <- sample(1:nrow(Hotel_1),0.80*nrow(Hotel_1))### this sample out 80% of the 1's outcome 
+
+trainHoteldata_2 <- sample(1:nrow(Hotel_2),0.80*nrow(Hotel_2))
+
+view(trainHoteldata_1)### it will give you the indexes  of the 80% of 1's nrow
+
+view(trainHoteldata_2)
+
+```
+
+```{r}
+##put both in dataframe
+
+trainingH_1 <- Hotel_1[trainHoteldata_1,] ### subsetting 
+
+trainingH_1
+
+trainingH_2 <- Hotel_2[trainHoteldata_2,]
+
+trainingH_2
+```
+
+```{r}
+trainHdata <- rbind(trainingH_1,trainingH_2)## combine the 1's & 0's together
+
+view(trainHdata)
+```
+
+```{r}
+####Creating testing datasets 
+
+testHoteldata1 <-Hotel_1 [-trainHoteldata_1,]
+
+testHoteldata2 <- Hotel_2[-trainHoteldata_2,]
+
+view(testHoteldata1)
+
+view(testHoteldata2)
+```
+
+```{r}
+##Binding the two datasets together
+
+testH <- rbind(testHoteldata1, testHoteldata2)
+testH
+
+view(testH)
+```
+
+```{r}
+view(Hoteldata)
+str(Hoteldata)
+head(Hoteldata)
+
+```
+
+```{r}
+###Creating a Model
+logisticsmodelH <- glm(IsCanceled~.,data = trainHdata, family = binomial(link = "logit"))
+
+summary(logisticsmodelH)
+```
+
+```{r}
+logisticsmodelH_1 <- glm(IsCanceled~LeadTime+ArrivalDateYear+ArrivalDateMonth
+                                            +StaysInWeekendNights+StaysInWeekNights
+                                            +Adults+Children+Babies+Meal
+                                            +MarketSegment+DistributionChannel
+                                            +IsRepeatedGuest+PreviousCancellations
+                                            +PreviousBookingsNotCanceled
+                                            +ReservedRoomType+AssignedRoomType
+                                            +BookingChanges+DepositType
+                                            +DaysInWaitingList+CustomerType
+                                            +ADR+RequiredCarParkingSpaces
+                                            +TotalOfSpecialRequests,data =trainHdata,
+                                             binomial(link = "logit"))
+summary(logisticsmodelH_1)
+```
+
+```{r}
+logisticsmodelH_2 <- glm(IsCanceled~.-RequiredCarParkingSpaces, data = trainHdata,
+                         binomial(link="logit"))
+
+summary(logisticsmodelH_2)
+
+```
+
+```{r}
+logisticsmodelH_3 <- glm(IsCanceled~.-DaysInWaitingList, data = trainHdata,
+                         binomial(link="logit"))
+
+summary(logisticsmodelH_3)
+
+```
+
+```{r}
+logisticsmodelH_4 <- glm(IsCanceled~LeadTime+ArrivalDateYear+ArrivalDateMonth
+                                            +StaysInWeekendNights+StaysInWeekNights
+                                            +Adults+Children+Babies
+                                            +MarketSegment+DistributionChannel
+                                            +IsRepeatedGuest+PreviousCancellations
+                                            +PreviousBookingsNotCanceled
+                                            +ReservedRoomType+AssignedRoomType
+                                            +DepositType+CustomerType+ADR
+                                            +RequiredCarParkingSpaces
+                                            +TotalOfSpecialRequests,data =trainHdata,
+                                             binomial(link = "logit"))
+summary(logisticsmodelH_4)
+```
+
+```{r}
+logisticsmodelH_5 <- glm(IsCanceled~LeadTime+ArrivalDateYear+ArrivalDateMonth
+                                            
+                                            +Adults+Children+Babies+Meal
+                                            +MarketSegment
+                                            +IsRepeatedGuest+PreviousCancellations
+                                            +PreviousBookingsNotCanceled
+                                            +ReservedRoomType+AssignedRoomType
+                                            +BookingChanges+DepositType
+                                          +CustomerType+ADR+RequiredCarParkingSpaces,
+                                           data =trainHdata,
+                                             binomial(link = "logit"))
+summary(logisticsmodelH_5)
+```
+
+```{r}
+##predict scores and add it to the testing data
+
+predicted <- predict(logisticsmodelH,testH)
+predicted
+
+view(predicted)
+
+```
+
+
+
+```{r}
+###Joining of the predicted variable to the dataset table
+
+testH$predicted <- predicted
+
+view(testH)
+
+```
+
+```{r}
+##Analysis of Logistics Model and Model fit
+modelsummaryH <- summary(logisticsmodelH)
+
+
+modelsummaryH$coefficient
+
+
+
+```
+
+```{r}
+
+
+AIC(logisticsmodelH)##penalty  for adding additional variables to the model
+
+BIC(logisticsmodelH)### a stronger penalty for adding additional variables to the model
+```
+
+```{r}
+###Test and Graph the model
+##plot of Booking is canceled vs not canceled IsCanceled by Leadtime
+library(ggplot2)
+ggplot(testH,aes(x=IsCanceled,y=LeadTime))+geom_point()+stat_smooth(method="glm",se=FALSE)
+
+###Same In Bar Graph
+par(mfrow=c(1,1))
+plot(IsCanceled~LeadTime,data=trainHdata)
+
+```
+
+```{r}
+### Calling in my dataset
+View(Hoteldata)
+str(Hoteldata)
+```
+
+```{r}
+##Scoring the values back on the original dataset
+pred_H <- predict(logisticsmodelH,testH,"link")
+head(pred_H)
+
+```
+
+```{r}
+
+
+###Create new class prediction column on the original dataset for side by side comparison
+
+testH$class <-ifelse(pred_H>0.5, 1,0)
+
+view(testH)
+
+
+```
+
+```{r}
+
+table(pred_H)
+
+table(testH$IsCanceled)
+
+```
+
+```{r}
+table(ActualValue =testH$IsCanceled,PredictedValue = pred_H>0.5)
+
+```
+
+
+
+```{r}
+###foR ACCURACY
+##(TN+FP)/(TN+FN+FP+TP)
+(14722+4249)/(14722+4596+312+4249)
+```
+
+```{r}
+###Create new class prediction column on the original dataset for side by side comparison
+testH$class <-ifelse(pred>0.5, 1,0)
+view(testH)
+
+```
+
+
+
+```{r}
+###Practical REAL Time Prediction
+
+###To predict if a customer Booking is canceled or Not
+
+
+M <- data.frame(LeadTime=7,ArrivalDateYear=2015,ArrivalDateMonth= "July",
+               ArrivalDateWeekNumber=27,ArrivalDateDayOfMonth=1,StaysInWeekendNights=0,
+               StaysInWeekNights=4,Adults=2,Children=1,Babies=0,Meal="HB",           
+               MarketSegment="Direct", DistributionChannel="Direct",IsRepeatedGuest=0,
+               PreviousCancellations=0,PreviousBookingsNotCanceled=0,ReservedRoomType="C",
+               AssignedRoomType="C",BookingChanges=0,DepositType="No Deposit",
+               DaysInWaitingList=0,CustomerType="Transient",ADR=103.00,
+               RequiredCarParkingSpaces=0,TotalOfSpecialRequests=1)
+
+p <- predict(logisticsmodelH_1,M)
+
+p
+
+M$class <- ifelse(p>0,1,0)
+M
+```
+
+```{r}
+###Starting My RANDOM FOREST MODEL
+Hoteldata$IsCanceled <- ifelse(Hoteldata$IsCanceled==0, 1,0)
+
+View(Hoteldata)
+
+Hoteldata$IsCanceled <- as.factor(Hoteldata$IsCanceled)
+
+str(Hoteldata)
+```
+
+```{r}
+##get predictors values by fitting another model this helps  to know important predictors
+
+output.forestHoteldata <-randomForest(IsCanceled~.,data = Hoteldata)
+
+##View the result
+print(output.forestHoteldata)
+
+
+### To check the Importance variable
+randomForest:: importance(output.forestHoteldata)
+ 
+```
+
+```{r}
+###Plotting a variable Importance graph
+varImpPlot(output.forestHoteldata, las=2, col= "blue")
+```
+
+```{r}
+###To check  the model Error at each number of the trees
+plot(output.forestHoteldata)
+
+```
+
+```{r}
+### Divide my dataset into training and testing datasets
+
+set.seed(150)
+
+split_tagHoteldata <-sample(nrow(Hoteldata),0.80*nrow(Hoteldata),replace = FALSE)
+
+trainHoteldata <- Hoteldata[split_tagHoteldata,]
+
+testHoteldata <- Hoteldata[-split_tagHoteldata,]
+
+nrow(trainHoteldata)
+
+nrow(testHoteldata)
+ 
+summary(trainHoteldata)
+
+summary(testHoteldata)
+```
+
+```{r}
+view(trainHoteldata)
+view(testHoteldata)
+str(Hoteldata)
+Hoteldata$IsCanceled <- as.factor(Hoteldata$IsCanceled)
+
+```
+
+```{r}
+
+### Implementing a Random Forest Model to the dataset and also checking the importance
+
+modelHoteldata_1 <- randomForest(IsCanceled~.,data = trainHoteldata, importance = TRUE)
+
+  
+modelHoteldata_1
+
+##higher values in MeanDecreaseGini is the greater importance
+
+
+importance(modelHoteldata_1)
+
+
+
+
+```
+
+```{r}
+###Fine tune the random Forest Random
+modelHoteldata_2 <- randomForest(IsCanceled~.,data = trainHoteldata,
+                                            ntree=700,mtry=3,importance = TRUE)
+    
+
+modelHoteldata_2
+
+
+```
+
+```{r}
+##predict on the train data
+
+predict_trainHoteldata <- predict(modelHoteldata_1,trainHoteldata,type = "class")
+predict_trainHoteldata
+table(predict_trainHoteldata,trainHoteldata$IsCanceled)
+
+```
+
+```{r}
+confusionMatrix(table(predict_testHoteldata,testHoteldata$IsCanceled))
+
+
+```
+
+```{r}
+###Check the variable of importance
+
+
+randomForest::importance(modelHoteldata_2)
+
+varImpPlot(modelHoteldata_2,las=2,col='blue')
+
+```
+
+```{r}
+##Predicting on Testing dataset
+predtest <- predict(modelHoteldata_1, testHoteldata, type ="class")
+predtest
+
+
+
+```
+
+```{r}
+###Checking classification accuracy
+
+mean(predtest == testHoteldata$IsCanceled)
+
+table(predtest,testHoteldata$IsCanceled)
+```
+
+```{r}
+confusionMatrix(table(predtest,testHoteldata$IsCanceled))
+```
+
+#DECISION TREE MODEL
+
+```{r}
+###install other Enhanced Tree plotters
+install.packages("rpart")
+install.packages("rpart.plot")
+install.packages("rattle")
+install.packages("RColorBrewer")
+install.packages("tree")
+
+install.packages("e1071")
+
+install.packages("caTools")
+
+```
+
+```{r}
+library(rpart)##it is using in building a classification or regression models of a very ##general structure using a two stage procedure.
+
+library(rpart.plot)##it automatically scales and adjusts the displayed tree for best fit.
+
+library(rattle)##It provides statistical and visual summaries of data, transform data so it ##can be readily modelled.
+
+library(RColorBrewer)## is an R package that contains a ready to use color palettes for 
+## creating beautiful graphics.
+
+library(tree)##
+library(caTools)
+library(e1071)
+library(caret)
+```
+
+
+##Building the decision Tree Model
+
+```{r}
+
+treemodel_H <- tree(IsCanceled~.,data=Hoteldata)
+summary(treemodel_H)
+##the Residual mean deviance 0.89% 
+
+###the number terminal node is 6
+###the misclassification error is 0.19% which is 19% is low which means the model is ok
+### 5 variables were used for the construction of the trees.
+```
+
+```{r}
+###plot the decision tree
+par(mfrow=c(1,1))
+plot(treemodel_H)
+text(treemodel_H,pretty= 0)
+
+```
+
+```{r}
+###plot the tree with repart
+treemodel_H2 <- rpart(IsCanceled~., data = Hoteldata)##Using repart to create a model
+summary(treemodel_H2)
+
+```
+
+```{r}
+fancyRpartPlot(treemodel_H2)
+```
+
+```{r}
+printcp(treemodel_H2)
+
+
+```
+
+```{r}
+ptreeH <- prune(treemodel_H2,+ treemodel_H2$cptable[which.min(treemodel_H2$cptable
+                                                     [,"xerror"]),"CP"])
+summary(ptreeH)
+
+
+
+```
+
+```{r}
+fancyRpartPlot(ptreeH,uniform = TRUE, main = 'Pruned Classification Tree')
+
+```
+
+```{r}
+sample.split(Hoteldata$IsCanceled,SplitRatio = 0.70)->split_tag ###you have to sample 70% and assign to split_tag
+split_tag
+```
+
+```{r}
+subset(Hoteldata,split_tag==T)-> trainHoteldata ###contain the 70% train
+trainHoteldata
+nrow(trainHoteldata)
+view(trainHoteldata)
+
+```
+
+```{r}
+subset(Hoteldata,split_tag==F)-> testHoteldata ###contain the 30% test
+testHoteldata
+nrow(testHoteldata)
+
+```
+
+```{r}
+###Building the model on the train data
+### first fit an unpruned classification tree using all of the predictors
+treemodel1_H = tree(IsCanceled~.,data = trainHoteldata)
+summary(treemodel1_H)
+
+```
+
+```{r}
+plot(treemodel1_H)
+text(treemodel1_H,pretty = 0)
+title(main = "Unpruned Classification Tree")
+```
+
+```{r}
+##make Prediction with the test data.
+tree_predH = predict(treemodel1_H,testHoteldata,type="class")
+tree_predH
+view(tree_predH)
+
+```
+
+```{r}
+confusionMatrix(tree_predH,testHoteldata$IsCanceled)
+```
+
+```{r}
+##Check Actual against the predicted Response
+predresult <- cbind(testHoteldata,tree_predH)
+view(predresult)
+```
+
+```{r}
+#perform Cross validation
+cv_tree=cv.tree(treemodel1_H,FUN = prune.misclass)
+cv_tree ## 7 terminal nodes have the least deviation of 16603
+###so in the next line we will prune
+#this no 7 can vary
+
+```
+
+```{r}
+pruned_tree =prune.misclass(treemodel_H,best=7)
+plot(pruned_tree)
+text(pruned_tree,pretty=0)
+title(main="Cross Validated Prune Classification Tree")
+```
+
+```{r}
+###Predict with the crossvalidated Pruned_tree
+tree_predictH =predict(pruned_tree,testHoteldata,type = "class")
+table(testHoteldata$IsCanceled,tree_predH)
+
+```
+
+```{r}
+confusionMatrix(tree_predH,testHoteldata$IsCanceled)
+confusionMatrix(tree_predictH,testHoteldata$IsCanceled)
+```
+
+```{r}
+ 
+###get the accuracy
+(8140+20863)/(8140+20863+1687+5127)
+```
